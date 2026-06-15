@@ -1,302 +1,255 @@
-<!DOCTYPE HTML>
-<!--
-	Dimension by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
-<html>
-	<!-- 	This is the "Head" of the HTML document.
-		It contains information that isn't displayed on the actual page, but is useful
-		for the web browser when loading the page	
-	-->
-	
-		<!-- This is the title of the page. It is the text that appears inside this pages tab in your web browser -->
-		<title>David J. Setton</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<!-- 	This links to this page's CSS, which is contained in the folder assets/css and the file main.css.
-			 If you want to edit the styling of this page, you should edit the file assets/css/main.css
-			 If you have a new CSS file you'd like to add with custom styling, you should link to it here using:
-			 <link rel="stylesheet" href="assets/css/my-new-css-file.css"/> 
-		-->
-		<link rel="stylesheet" href="assets/css/main.css" />
-		<!-- 	In the case that the user's browser does not support JavaScript (unlikely, but possible), the page
-			will load a separate set of CSS stylings from the file assets/css/noscript.css
-			Any HTML contained inside <noscript></noscript> tags will be loaded in the event that JavaScript is not
-			available. 
-		-->
-		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-	</head>
-	<!-- The body is the location where your site's content will go -->
-	<body class="is-preload">
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>David J. Setton — Astrophysicist</title>
+  <meta name="description" content="David J. Setton — Brinson Prize Fellow at Princeton University, incoming NHFP Hubble Fellow at Johns Hopkins University. Spectral energy distribution modeling of massive galaxies across cosmic time.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
 
-			<!-- This "div" wraps around all of our content and just changes how things are layed out -->
-			<div id="wrapper">
+<nav class="top">
+  <div class="inner">
+    <span class="name">David&nbsp;J.&nbsp;Setton</span>
+    <ul>
+      <li><a href="#about">About</a></li>
+      <li><a href="#research">Research</a></li>
+      <li><a href="#teaching">Teaching</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
 
-					<!-- This is where the content that appears on page load exists -->
-					<header id="header">
-						<!-- This is the main content of the front page -->
-						<div class="content">
-							<div class="inner">
-								<!-- Here is a heading where you can put your name -->
-								<h1>
-									David J. Setton
-								</h1>
-								<!-- 	Here is an image where you can put a picture of you. 
-									You can change the width and height attributes below to change how large
-									your image is.
+<main>
 
-									Try adding "border-radius: 50%;" to the style attribute.
-								-->
-								<img src="images/engagement_headshot.jpeg" style="width:280px; height:350; object-fit: cover;">
-								<!-- 	Here is a paragraph where you can put your position and institution, or
-									a short line about yourself.
-								-->
-								<p style="margin-bottom: 0;">
-									Brinson Prize Fellow 
-								</p>
-								<p style="margin-top: 0;">
-									Princeton University
-								</p>
-								<!-- Here is a paragraph where you can put a link to your CV -->
-								<p>
-									<!-- Note you will want to change where this points to! -->
-									<a href="Curriculum_Vitae_2025_jobcycle.pdf" target="_blank">Curriculum Vitae</a> / <a href="https://ui.adsabs.harvard.edu/search/q=%20author%3A%22setton%2C%20david%22&sort=date%20desc%2C%20bibcode%20desc&p_=0" target="_blank">My Publications</a>
-								</p>
-							</div>
-						</div>
-						<!-- This is the navigation menu -->
-						<nav>
-							<!-- This element makes an "Unordered List" -->
-							<ul>
-								<!-- This is a "List Item" -->
-								<li>
-									<!-- 	Note that this links to #about, which will move the page to wherever
-										the element with the id "about" exists.
-									-->
-									<a href="#about">About Me</a>
-								</li>
-								<li>
-									<a href="#research">Research</a>
-								</li>
-								<li>
-									<a href="#contact">Contact</a>
-								</li>
-								<!-- 	You can add another button to your navigation menu by adding
-									another List Item with a link inside of it.
-								-->
-								<!-- <li>
-									<a href="images/headshot.jpeg">My CV</a>
-								</li> -->
-							</ul>
-						</nav>
-					</header>
+  <section class="hero">
+    <div>
+      <p class="eyebrow">
+        Brinson Prize Fellow · Princeton University
+        <span class="sub">→ NHFP Hubble Fellow · Johns Hopkins · September 2026</span>
+      </p>
+      <h1>David&nbsp;J.<br>Setton</h1>
+      <p class="lede">I study the co-evolution of massive galaxies and their supermassive black holes across cosmic time, using joint optical and far-infrared observations to constrain their star formation histories.</p>
+      <div class="cta">
+        <a href="assets/pdfs/CV_June_15_2026.pdf">Curriculum Vitae</a>
+        <a href="https://ui.adsabs.harvard.edu/search/q=%20author%3A%22setton%2C%20david%22&sort=date%20desc%2C%20bibcode%20desc">Publications (ADS)</a>
+        <a href="mailto:davidsetton@princeton.edu">Email</a>
+      </div>
+    </div>
+    <div class="hero-img">
+      <img src="images/engagement_headshot.jpeg" alt="David J. Setton">
+    </div>
+  </section>
 
-					<!-- These are the "cards" that appear when you click the buttons on the main page -->
-					<div id="main">
-						<!-- 	Here is the "About Me" card. Note it has the id "about", which the previous 
-							button links to.
-						-->
-						<article id="about">
-							<h2 class="major">About Me</h2>
-							<!-- Here is an image that you can customize for this page -->
-							<span class="image main">
-								<img src="images/billy_bass.jpg" alt="Bonnaroo 2019"/>
-							</span>
-							<p>
-								I am a Brinson Prize Fellow at the Princeton University Department of Astrophysical Sciences studying massive galaxies as a part of the <a href="http://squigglesurvey.github.io" target="_blank">SQuIGGLE</a>, <a href="https://annadeg.github.io/projects/RUBIES/" target="_blank">RUBIES</a>, and <a href="https://jwst-uncover.github.io/" target="_blank">UNCOVER</a> surveys. My research focuses on understanding the physical mechanism that drives the shutdown of star formation in massive galaxies by placing constraints on the star formation histories, structures, and number densities of recently quenched systems. I am also very interested in Little Red Dots and understanding their strange "V"-shaped spectral energy distributon. When I'm not doing science, I am usually <a href="https://letterboxd.com/davidsetton/" target="_blank">watching movies</a>, <a href="https://www.youtube.com/watch?v=kAU-MHYpImw&t=1712s&ab_channel=MonarkSound" target="_blank">playing guitar for my band</a>, or watching football.
-							</p>
-							<!-- Here are three paragraphs where you can fill out information about yourself -->
-							<p>
-								<!-- Items contained in <b> tags are bolded! -->
-								<b>Education:</b>
-								<br>May 2019-July 2023: Ph.D Candidate in Physics, University of Pittsburgh
-								<br>Aug. 2017-May 2019: M.S. in Physics, University of Pittsburgh
-								<br>Aug. 2013-May 2017: B.S. in Physics and Astronomy, University of Arizona
-							</p>
-							<p>
-								<b>Publications:</b> <a href="https://ui.adsabs.harvard.edu/search/q=%20%20author%3A%22setton%2C%20david%22&sort=date%20desc%2C%20bibcode%20desc&p_=0">ADS</a>
-							</p>
-						</article>
+  <section id="about">
+    <div class="section-head">
+      <span class="num">01</span>
+      <h2>About</h2>
+      <span class="rule"></span>
+    </div>
+    <div class="about-layout">
+      <div class="about-top">
+        <div class="content">
+          <p>I am a Brinson Prize Fellow in the Department of Astrophysical Sciences at Princeton University, where I have used a wide range of data spanning the rest-optical to the far-IR to constrain the total energy output of massive galaxies and AGN. In September 2026 I will move to Johns Hopkins University as an NHFP Hubble Fellow. My work spans the <a href="http://squigglesurvey.github.io">SQuIGGLE</a>, <a href="https://annadeg.github.io/projects/RUBIES/">RUBIES</a>, <a href="https://jwst-uncover.github.io/">UNCOVER</a>, <a href="https://minerva.colorado.edu/">MINERVA</a>, and <a href="https://ui.adsabs.harvard.edu/abs/2022arXiv220614908G/abstract">PFS-SSP</a> collaborations.</p>
+          <p>I am interested in the physical mechanisms that shut down star formation in massive galaxies, the panchromatic SEDs of Little Red Dots, and the star formation histories of the first massive galaxies revealed by JWST.</p>
+          <p>Outside of work, I am usually <a href="https://letterboxd.com/davidsetton/">watching and reviewing movies</a>, <a href="https://www.youtube.com/watch?v=kAU-MHYpImw">playing guitar in my band</a>, or rooting for my Seahawks.</p>
+        </div>
+        <figure class="figure">
+          <img src="images/guitar_reception.jpg" alt='David playing "Isn&rsquo;t She Lovely" at his wedding reception'>
+          <figcaption>“Isn&rsquo;t She Lovely” at our wedding, July 2025</figcaption>
+        </figure>
+      </div>
+      <div class="about-meta">
+        <div class="meta">
+          <h4>Education</h4>
+          <p>Ph.D. Physics, University of Pittsburgh — 2023</p>
+          <p>M.S. Physics, University of Pittsburgh — 2019</p>
+          <p>B.S. Physics &amp; Astronomy, University of Arizona — 2017</p>
+        </div>
+        <div class="meta">
+          <h4>Collaborations</h4>
+          <p>SQuIGGLE · RUBIES · UNCOVER/MEGASCIENCE · MINERVA · PFS-SSP</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-						<!-- Here is the "Research" card. -->
-						<article id="research">
-							<h2 class="major">Research</h2>
+  <section id="research">
+    <div class="section-head">
+      <span class="num">02</span>
+      <h2>Research</h2>
+      <span class="rule"></span>
+    </div>
 
-							<span class="image main">
-								<img src="images/psb_spec_fit.png" alt=""/>
-							</span>
+    <div class="research-item">
+      <div class="research-top">
+        <div class="figure"><img src="images/psb_spec_fit.png" alt="SED + spectral fit of a post-starburst galaxy"></div>
+        <div class="content">
+          <h3>Post-starburst galaxies in the wake of cosmic noon</h3>
+          <p>As part of the <a href="http://squigglesurvey.github.io">SQuIGGLE Survey</a>, I lead population-level studies of post-starbursts selected from SDSS and DESI. Using novel joint SED and spectroscopic fitting, my collaborators and I have constrained their star formation histories, structures, and molecular gas content. Most recently, I have led a large ALMA CO(2–1) program to understand the surprising diversity of cold gas reservoirs in z∼0.7 post-starbursts, and an ongoing follow-up ALMA+JWST program to resolve CO(2–1) and Pa-α at sub-kpc scales, revealing the dust-obscured star forming cores of these systems and allowing us to securely measure their true star formation rates. I am looking forward to extending this work with the PFS-SSP Galaxy Evolution survey, where I will study the rate of rapid quenching in mass-complete samples at cosmic noon.</p>
+        </div>
+      </div>
+      <ul class="papers">
+        <li><a href="https://ui.adsabs.harvard.edu/abs/2025arXiv250900148S/abstract">Buried star formation cannot explain the rapidly fading CO(2–1) luminosity in z∼0.7 post-starbursts</a><span class="authors">Setton et al. 2025</span></li>
+        <li><a href="https://ui.adsabs.harvard.edu/abs/2024ApJ...976...36Z/abstract">DESI massive post-starburst galaxies at z∼1.2 have compact structures and dense cores</a><span class="authors">Zhang, Setton et al. 2024</span></li>
+        <li><a href="https://ui.adsabs.harvard.edu/abs/2023ApJ...947L..31S/abstract">DESI Survey Validation: an increasing fraction of recently quenched galaxies at z∼1</a><span class="authors">Setton et al. 2023</span></li>
+        <li><a href="https://ui.adsabs.harvard.edu/abs/2022ApJ...931...51S/abstract">The compact structures of massive z∼0.7 post-starburst galaxies</a><span class="authors">Setton et al. 2022</span></li>
+        <li><a href="https://ui.adsabs.harvard.edu/abs/2020ApJ...905...79S/abstract">SQuIGGLE: massive z∼0.6 post-starbursts exhibit flat age gradients</a><span class="authors">Setton et al. 2020</span></li>
+      </ul>
+    </div>
 
-                            <p>
-								<b>Post-starburst galaxies in the wake of cosmic noon: what drives rapid quenching?</b>
-								<br>As a part of the SQuIGGLE Survey, I am working to conduct population level-studiies of post-starburst galaxies selected from the SDSS and DESI spectrosopic samples. Using novel SED fitting techniques, we have quantified the star formation histories of these samples, and have studied their structures and gas contents as they relate to their recent star formation. Lately, I have been working on a large CO(2-1) study of these systems using data obtained in my ALMA programs to understand why SQuIGGLE post-starbursts exhibit a diversity in CO-luminosity. I am also excited about my upcoming ALMA/JWST joint program that will obtain high resolution CO(2-1) and Pa-Alpha maps of the most CO-luminous galaxies in our sample.
-                                <br><b>Relevant publications:</b>
-								<br><a href="https://ui.adsabs.harvard.edu/abs/2025arXiv250900148S/abstract">SQuIGGLE: Buried star formation cannot explain the rapidly fading CO(2-1) luminosity in massive, z~0.7 post-starburst galaxies (Setton+2025)
-								<br><a href="https://ui.adsabs.harvard.edu/abs/2023ApJ...947L..31S/abstract">DESI Survey Validation Spectra Reveal an Increasing Fraction of Recently Quenched Galaxies at z~1 (Setton+2023)
-                                <br><a href="https://ui.adsabs.harvard.edu/abs/2022ApJ...931...51S/abstract">The Compact Structures of Massive z~0.7 Post-starburst Galaxies in the SQuIGGLE Sample (Setton+2022)
-                                <br><a href="https://ui.adsabs.harvard.edu/abs/2020ApJ...905...79S/abstract">SQuIGGLE Survey: Massive z~0.6 Post-starburst Galaxies Exhibit Flat Age Gradients (Setton+2020)
-                                <br><a href="https://squigglesurvey.github.io/">SQuIGGLE Survey Website
-                                </a>
-							
-							</p>	
+    <div class="research-item reverse">
+      <div class="research-top">
+        <div class="figure"><img src="images/monster_nulnu.png" alt="V-shaped SED of a Little Red Dot"></div>
+        <div class="content">
+          <h3>The mysterious V-shaped SED of Little Red Dots</h3>
+          <p>With <a href="https://annadeg.github.io/projects/RUBIES/">RUBIES</a> and <a href="https://jwst-uncover.github.io/">UNCOVER</a>, I work to uncover the origin of the unusual continuum and line emission in Little Red Dots. Using PRISM spectra from the Dawn JWST Archive, I identified extremely red Hα emitters and showed that their spectral turnover ubiquitously occurs at 3645 Å — the Balmer limit. Combining deep JWST/MIRI and ALMA imaging, I set the tightest constraints to date on the LRD infrared luminosity and significantly lower bolometric luminosities, finding strong tension with models that invoke heavy reddening of an intrinsically blue SED. In the coming years, I am looking forward to new JWST spectroscopy that will better constrain the poorly understood near- and mid-IR in LRDs (<a href="https://www.stsci.edu/jwst/science-execution/program-information?id=10445">JWST-GO #10445</a>, PIs: de Graaff and Setton; <a href="https://www.stsci.edu/jwst/science-execution/program-information?id=11618">JWST-GO #11618</a>, PIs: Ma and Setton).</p>
+        </div>
+      </div>
+      <ul class="papers">
+        <li><a href="https://ui.adsabs.harvard.edu/abs/2025arXiv250905434G/abstract">What you see is what you get: empirically measured bolometric luminosities of Little Red Dots</a><span class="authors">Greene, Setton et al. 2025</span></li>
+        <li><a href="https://ui.adsabs.harvard.edu/abs/2025arXiv250302059S/abstract">A confirmed deficit of hot and cold dust emission in the most luminous Little Red Dots</a><span class="authors">Setton et al. 2025</span></li>
+        <li><a href="https://ui.adsabs.harvard.edu/abs/2025arXiv250408032M/abstract">Counting Little Red Dots at z&lt;4 with ground-based surveys</a><span class="authors">Ma, Greene, Setton et al. 2025</span></li>
+        <li><a href="https://ui.adsabs.harvard.edu/abs/2024arXiv241103424S/abstract">Little Red Dots at an inflection point: the V-shaped turnover at the Balmer limit</a><span class="authors">Setton et al. 2024</span></li>
+        <li><a href="https://ui.adsabs.harvard.edu/abs/2024arXiv241006257M/abstract">UNCOVER: 404 Error — models not found for the triply imaged LRD A2744-QSO1</a><span class="authors">Ma, Greene, Setton et al. 2024</span></li>
+      </ul>
+    </div>
 
-                            <span class="image main">
-								<img src="images/monster_nulnu.png" alt=""/>
-							</span>
+    <div class="research-item">
+      <div class="research-top">
+        <div class="figure"><img src="images/z5_qg_sfh.png" alt="Star formation history of a z=5 quiescent galaxy"></div>
+        <div class="content">
+          <h3>The first massive, quiescent galaxies with JWST</h3>
+          <p>Within <a href="https://annadeg.github.io/projects/RUBIES/">RUBIES</a> and <a href="https://jwst-uncover.github.io/">UNCOVER</a>, I study the assembly and quenching histories of the first quiescent galaxies, identified by their strong Balmer breaks. We have uncovered a suite of systems that defy expectation: a log M∼11 quenched galaxy at z=5, a passive log M∼10.3 system at z=7, and a massive dusty galaxy at z∼4 with very low equivalent-width Hα whose star formation history implies very early formation. In the coming years, I am excited to connect these populations of quenched galaxies to their progenitors with joint ALMA+JWST studies of dusty star forming galaxies, and to use upcoming ALMA and NOEMA programs to refine measurements of the star formation histories of the first quenched systems.</p>
+        </div>
+      </div>
+      <ul class="papers">
+        <li><a href="https://ui.adsabs.harvard.edu/abs/2025arXiv250808577Z/abstract">RUBIES spectroscopically confirms the high number density of quiescent galaxies from z=2–5</a><span class="authors">Zhang, de Graaff, Setton et al. 2025</span></li>
+        <li><a href="https://ui.adsabs.harvard.edu/abs/2025ApJ...985..125S/abstract">UNCOVER: significant reddening in cosmic noon quiescent galaxies</a><span class="authors">Siegel, Setton et al. 2025</span></li>
+        <li><a href="https://ui.adsabs.harvard.edu/abs/2024NatAs.tmp..284D/abstract">Efficient formation of a massive quiescent galaxy at z=4.9</a><span class="authors">de Graaff, Setton et al. 2024</span></li>
+        <li><a href="https://ui.adsabs.harvard.edu/abs/2024arXiv240903829W/abstract">RUBIES reveals a massive quiescent galaxy at z=7.3</a><span class="authors">Weibel, de Graaff, Setton et al. 2024</span></li>
+        <li><a href="https://ui.adsabs.harvard.edu/abs/2024ApJ...974..145S/abstract">UNCOVER NIRSpec/PRISM: early core formation in a centrally dusty quiescent galaxy at z=3.97</a><span class="authors">Setton et al. 2024</span></li>
+      </ul>
+    </div>
+  </section>
 
-                            <p>
-								<b>Understanding the mysterious "V-shaped" SED of Little Red Dots</b>
-								<br>As a part of the RUBIES and UNCOVER surveys, I am working to understand what is producing the continuum shape and line emission in Little Red Dots. Using the full sample of PRISM spectra in the Dawn JWST Archive, I selected all extremely red Halpha emitters and found that the turnover in the LRD spectra ubiquitously occurs at 3645 A, the wavelength associated with n=2 Balmer absorption/emission. I also used deep JWST/MIRI and ALMA imaging to place the deepest constraints on the LRD IR luminosity to date, showing that models that invoke significant reddening of an intrinsically blue SED are in tension with the lack of detections of dust continuum at any temperature.
-                                <br><b>Relevant publications:</b>
-								<br><a href="https://ui.adsabs.harvard.edu/abs/2025arXiv250905434G/abstract">What you see is what you get: empirically measured bolometric luminosities of Little Red Dots (Greene, Setton+2025)
-				    			<br><a href="https://ui.adsabs.harvard.edu/abs/2025arXiv250302059S/abstract">A confirmed deficit of hot and cold dust emission in the most luminous Little Red Dots (Setton+2025)
-								<br><a href="https://ui.adsabs.harvard.edu/abs/2025arXiv250408032M/abstract">Counting Little Red Dots at z<4 with Ground-based Surveys and Spectroscopic Follow-up (Ma, Greene, Setton+2025)
-								<br><a href="https://ui.adsabs.harvard.edu/abs/2024arXiv241103424S/abstract">Little Red Dots at an Inflection Point: Ubiquitous "V-Shaped" Turnover Consistently Occurs at the Balmer Limit (Setton+2024)
-								<br><a href="https://ui.adsabs.harvard.edu/abs/2024arXiv241006257M/abstract">UNCOVER: 404 Error -- Models Not Found for the Triply Imaged Little Red Dot A2744-QSO1 (Ma, Greene, Setton+2024)
-                                </a>
-							
-							</p>	
+  <section id="mentorship">
+    <div class="section-head">
+      <span class="num">03</span>
+      <h2>Mentorship</h2>
+      <span class="rule"></span>
+    </div>
 
-                            
-                            <span class="image main">
-								<img src="images/z5_qg_sfh.png" alt=""/>
-							</span>
+    <div class="students-block">
+      <h4 class="students-heading">Graduate Students</h4>
+      <ul class="students-list">
+        <li>
+          <a class="name" href="https://jaredcsiegel.github.io/">Jared Siegel</a>
+          <span class="school">Princeton</span>
+          <span class="topic">Cosmic-noon quiescent galaxy reddening · JWST Cycle 4 PI</span>
+        </li>
+        <li>
+          <a class="name" href="https://web.astro.princeton.edu/people/yilun-ma">Yilun Ma</a>
+          <span class="school">Princeton</span>
+          <span class="topic">Little Red Dot demographics and SEDs · JWST Cycle 5 PI</span>
+        </li>
+        <li>
+          <a class="name" href="https://yunchongzhang-astro.github.io/">Yunchong Zhang</a>
+          <span class="school">Pitt</span>
+          <span class="topic">Massive post-starbursts and quiescent galaxies at z∼1–5</span>
+        </li>
+        <li>
+          <a class="name" href="https://web.astro.princeton.edu/people/abby-mintz">Abby Mintz</a>
+          <span class="school">Princeton</span>
+          <span class="topic">Low-mass galaxies and bursty SFHs at cosmic noon</span>
+        </li>
+        <li>
+          <a class="name" href="https://web.astro.princeton.edu/people/helena-treiber">Lena Treiber</a>
+          <span class="school">Princeton</span>
+          <span class="topic">High-redshift broad-line AGN demographics</span>
+        </li>
+        <li>
+          <a class="name" href="https://web.astro.princeton.edu/people/kate-shavelle">Kate Shavelle</a>
+          <span class="school">Princeton</span>
+          <span class="topic">Host-galaxy properties of mid-IR-selected luminous AGN</span>
+        </li>
+      </ul>
+    </div>
 
-                            <p>
-								<b>The star formation histories and structures of the first massive, passive galaxies with JWST</b>
-								<br>Also with RUBIES and UNCOVER, I am working to study the star formation histories of the first galaxies in the universe that exhibit strong Balmer breaks. We have discovered extremely intersting systems at early cosmic times that in many ways defy predictions, including a logM~11 quenched galaxy at z=5, a passive logM~10.3 galaxy at z=7, and a massive dusty galaxy with very low equivalent width Halpha and a star foramtion history that implies very early formation at z~4. I am also working with students at Princeton and Pitt to study the spatially resolved structures, star formation histories, and rates of AGN incidence in large samples of systems at and above z=2.
-                                <br><b>Relevant publications:</b>
-								<br><a href="https://ui.adsabs.harvard.edu/abs/2025arXiv250808577Z/abstract">RUBIES spectroscopically confirms the high number density of quiescent galaxies from z = 2-5 (Zhang, de Graaff, Setton+2025)
-								<br><a href="https://ui.adsabs.harvard.edu/abs/2025ApJ...985..125S/abstract">UNCOVER: Significant Reddening in Cosmic Noon Quiescent Galaxies (Siegel, Setton+2025)
-								<br><a href="https://ui.adsabs.harvard.edu/abs/2024NatAs.tmp..284D/abstract">Efficient formation of a massive quiescent galaxy at redshift 4.9 (de Graaff, Setton+2024)
-                                <br><a href="https://ui.adsabs.harvard.edu/abs/2024arXiv240903829W/abstract">RUBIES Reveals a Massive Quiescent Galaxy at z=7.3 (Weibel, de Graaff, Setton+2024)
-                                <br><a href="https://ui.adsabs.harvard.edu/abs/2024ApJ...974..145S/abstract">UNCOVER NIRSpec/PRISM Spectroscopy Unveils Evidence of Early Core Formation in a Massive, Centrally Dusty Quiescent Galaxy at z = 3.97 (Setton+2024)
-                                </a>
-							
-							</p>	
+    <div class="students-block">
+      <h4 class="students-heading">Undergraduates</h4>
+      <ul class="students-list alumni">
+        <li>
+          <a class="name" href="https://mverrico.github.io/">Maggie Verrico</a>
+          <span class="school">Pitt</span>
+          <span class="topic">Merger signatures in massive post-starbursts</span>
+          <span class="placement">→ PhD at UIUC</span>
+        </li>
+        <li>
+          <a class="name" href="https://anika-kumar.github.io/">Anika Kumar</a>
+          <span class="school">Pitt</span>
+          <span class="topic">Gas-rich neighbors of SQuIGGLE post-starbursts</span>
+          <span class="placement">→ PhD at RIT</span>
+        </li>
+        <li>
+          <span class="name">Erin Stumbaugh</span>
+          <span class="school">Pitt</span>
+          <span class="topic">The environments of post-starburst galaxies</span>
+          <span class="placement">→ Masters at Villanova</span>
+        </li>
+        <li>
+          <span class="name">Belinda Wu</span>
+          <span class="school">Princeton</span>
+          <span class="topic">Bursty star formation at z∼2</span>
+          <span class="placement">→ PhD at National Taiwan U.</span>
+        </li>
+        <li>
+          <span class="name">Hy Truong</span>
+          <span class="school">Princeton</span>
+          <span class="topic">Color gradients in massive galaxies at z∼2</span>
+          <span class="placement">→ PhD at SDSU</span>
+        </li>
+        <li>
+          <span class="name">Austin Guo</span>
+          <span class="school">Princeton</span>
+          <span class="topic">X-ray properties of mid-IR-luminous post-starburst galaxies</span>
+          <span class="placement"></span>
+        </li>
+      </ul>
+    </div>
+  </section>
 
+  <section id="contact">
+    <div class="section-head">
+      <span class="num">04</span>
+      <h2>Contact</h2>
+      <span class="rule"></span>
+    </div>
+    <div class="contact-grid">
+      <div>
+        <h4>Email</h4>
+        <p><a href="mailto:davidsetton@princeton.edu">davidsetton@princeton.edu</a></p>
+      </div>
+      <div>
+        <h4>Elsewhere</h4>
+        <div class="socials">
+          <a href="https://orcid.org/0000-0003-4075-7393">ORCID</a>
+          <a href="https://letterboxd.com/davidsetton/">Letterboxd</a>
+        </div>
+      </div>
+    </div>
+  </section>
 
+</main>
 
-						</article>
+<footer>
+  <span>© David J. Setton</span>
+  <span><a href="https://github.com/davidjsetton/davidjsetton.github.io">Source on GitHub</a></span>
+</footer>
 
-						<!-- Here is the "Community" card. -->
-						<article id="scicomm">
-							<h2 class="major">Teaching/Outreach</h2>
-							<span class="image main">
-								<img src="images/astro_on_tap.jpg" alt="Astro on Tap Pittsburgh, November 2018"/>
-							</span>
-							<p>
-								<b>Teaching:</b>
-								<br><i>Spring 2018</i>
-								<br>Teaching Assistant, ASTRON 0089 Stars, Galaxies, and Cosmos
-								<br><b>Received Myron P. Garfunkel Excellence in Graduate Student Teaching Award</b>
-								<br>
-								<br><i>Fall 2017</i>
-								<br>Teaching Assistant, ASTRON 0088 Stonehenge to Hubble
-								<br>Teaching Assistant, ASTRON 0077 Basics of Spaceflight
-							</p>
-							<p>
-								<b>Outreach:</b>
-								<br>Speaker at a number of retirement homes (highly recommend--the most friendly audience you will ever get as an astronomer!)
-								<br>Astronomy on Tap Pittsburgh Speaker
-								<br>"The Puzzling Counter Intuitiveness of Special Relativity"
-								<br>
-								<br>Volunteer Tutor at Taylor Alderdice High School
-							</p>
-<!-- 							<p>
-								<b>Equity & Inclusion:</b>
-							</p> -->
-						</article>
-
-						<!-- Here is a the "Contact" card. -->
-						<article id="contact">
-							<h2 class="major">Contact</h2>
-							<p> 
-								<b>Email:</b> 
-								davidsetton@princeton.edu
-							</p>
-							<p> 
-								<b>Address:</b> 
-								4 Ivy Lane
-								Office 215
-								Princeton, NJ 08540
-								
-							</p>
-
-							<!-- 	Here are the fancy icons that link to your social media.
-								These icons are rendered using Font Awesome fonts, and you can find more icons
-								here: https://fontawesome.com/icons
-							-->
-							<ul class="icons">
-								<!-- The Twitter icon -->
-								<li>
-									<!-- 	Note that you need to change the link to point to your page.
-										Replace "#" with your Twitter profile page.
-									-->
-									<a href="https://twitter.com/davidjsetton" class="icon fa-twitter">
-										<span class="label">Twitter</span>
-									</a>
-								</li>
-								<!-- The Facebook icon -->
-								<li>
-									<a href="https://www.facebook.com/davidjsetton" class="icon fa-facebook">
-										<span class="label">Facebook</span>
-									</a>
-								</li>
-								<!-- The Instagram icon -->
-								<li>
-									<a href="https://www.instagram.com/setton.david/" class="icon fa-instagram">
-										<span class="label">Instagram</span>
-									</a>
-								</li>
-								<!-- The GitHub icon -->
-								<li>
-									<a href="#" class="icon fa-github">
-										<span class="label">GitHub</span>
-									</a>
-								</li>
-								<!-- 	We can add a new icon by searching on the Font Awesome website
-									for the correct class name and inserting it as a new list item.
-
-									We found "envelope" here: https://fontawesome.com/icons/envelope
-								-->
-								<!-- <li>
-									<a href="#" class="icon fa-envelope">
-										<span class="label">Email</span>
-									</a>
-								</li> -->
-							</ul>
-						</article>
-					</div>
-
-					<!-- This is the footer that appears at the bottom of the page -->
-					<footer id="footer">
-						<!-- 	You can change "Untitled" to your name to show everyone that
-							this is your work.
-						-->
-						<p class="copyright">&copy; Untitled. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
-					</footer>
-
-			</div>
-
-			<!--	This is the background image of the site.
-				All configuration of the background is done with CSS.
-				Look in the file assets/css/main.css and search for "#bg" to
-				see how this element is styled. Look for comments pointing 
-				to where you can set a new background image.
-			-->
-			<div id="bg"></div>
-
-			<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/browser.min.js"></script>
-			<script src="assets/js/breakpoints.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
-
-	</body>
+</body>
 </html>
-
-
-
-
