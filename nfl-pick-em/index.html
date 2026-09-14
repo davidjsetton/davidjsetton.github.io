@@ -65,17 +65,26 @@
   #games { list-style: none; padding: 0; margin: 0; }
   .row {
     display: grid;
-    grid-template-columns: 44px 1fr 24px 1fr;
+    grid-template-columns: 20px 32px 1fr 20px 1fr;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     padding: 8px 4px;
     border-bottom: 1px solid var(--line);
     background: var(--bg);
-    cursor: grab;
     user-select: none;
   }
   .row.dragging { opacity: 0.4; }
   .row.drop-target { background: var(--drag); }
+  .handle {
+    cursor: grab;
+    color: var(--muted);
+    text-align: center;
+    font-size: 18px;
+    line-height: 1;
+    touch-action: none;
+    -webkit-user-select: none;
+  }
+  .handle:active { cursor: grabbing; }
   .rank {
     font-variant-numeric: tabular-nums;
     font-weight: 600;
@@ -159,6 +168,7 @@ function guessWeek() {
 $week.value = guessWeek();
 
 let currentGames = []; // [{id, away:{abbr,name,logo}, home:{...}}]
+let currentWeek = 1;
 let state = { order: [], picks: {} }; // order = array of game ids; picks[id] = 'home'|'away'
 
 function loadState(week) {
@@ -188,6 +198,7 @@ function loadWeek(week) {
   state.order = [...savedOrdered, ...missing];
   saveState(week);
 
+  currentWeek = week;
   render(week);
   $status.textContent = `${currentGames.length} games`;
 }
@@ -205,8 +216,12 @@ function render(week) {
     const rank = 16 - i;
     const li = document.createElement("li");
     li.className = "row";
-    li.draggable = true;
     li.dataset.id = id;
+
+    const handleEl = document.createElement("div");
+    handleEl.className = "handle";
+    handleEl.textContent = "⠇";
+    handleEl.setAttribute("aria-label", "Drag to reorder");
 
     const rankEl = document.createElement("div");
     rankEl.className = "rank";
@@ -222,8 +237,8 @@ function render(week) {
     const homeEl = teamPill(g.home, "home", state.picks[id] === "home");
     homeEl.addEventListener("click", (e) => { e.stopPropagation(); pick(id, "home", week); });
 
-    li.append(rankEl, awayEl, atEl, homeEl);
-    attachDrag(li, week);
+    li.append(handleEl, rankEl, awayEl, atEl, homeEl);
+    attachDrag(li, handleEl);
     $games.appendChild(li);
   });
 }
@@ -249,38 +264,46 @@ function pick(gameId, side, week) {
   render(week);
 }
 
-// --- HTML5 native drag & drop ---
-let dragId = null;
-function attachDrag(li, week) {
-  li.addEventListener("dragstart", (e) => {
-    dragId = li.dataset.id;
+// --- Pointer-event drag & drop (works on both mouse and touch) ---
+let drag = null;
+
+function attachDrag(li, handle) {
+  handle.addEventListener("pointerdown", (e) => {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    e.preventDefault();
+    drag = { id: li.dataset.id, pointerId: e.pointerId, li };
+    handle.setPointerCapture(e.pointerId);
     li.classList.add("dragging");
-    e.dataTransfer.effectAllowed = "move";
-    e.dataTransfer.setData("text/plain", dragId);
   });
-  li.addEventListener("dragend", () => {
-    dragId = null;
+  handle.addEventListener("pointermove", (e) => {
+    if (!drag || e.pointerId !== drag.pointerId) return;
+    e.preventDefault();
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const targetRow = el && el.closest(".row");
+    document.querySelectorAll(".row.drop-target").forEach(r => r.classList.remove("drop-target"));
+    if (targetRow && targetRow !== drag.li) targetRow.classList.add("drop-target");
+  });
+  const finish = (e) => {
+    if (!drag || e.pointerId !== drag.pointerId) return;
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const targetRow = el && el.closest(".row");
+    if (targetRow && targetRow !== drag.li) {
+      const src = drag.id;
+      const dst = targetRow.dataset.id;
+      const from = state.order.indexOf(src);
+      const to = state.order.indexOf(dst);
+      if (from !== -1 && to !== -1) {
+        state.order.splice(from, 1);
+        state.order.splice(to, 0, src);
+        saveState(currentWeek);
+      }
+    }
     document.querySelectorAll(".row").forEach(r => r.classList.remove("dragging", "drop-target"));
-  });
-  li.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-    document.querySelectorAll(".row").forEach(r => r.classList.remove("drop-target"));
-    li.classList.add("drop-target");
-  });
-  li.addEventListener("dragleave", () => li.classList.remove("drop-target"));
-  li.addEventListener("drop", (e) => {
-    e.preventDefault();
-    const src = dragId;
-    const dst = li.dataset.id;
-    if (!src || src === dst) return;
-    const from = state.order.indexOf(src);
-    const to = state.order.indexOf(dst);
-    state.order.splice(from, 1);
-    state.order.splice(to, 0, src);
-    saveState(week);
-    render(week);
-  });
+    drag = null;
+    render(currentWeek);
+  };
+  handle.addEventListener("pointerup", finish);
+  handle.addEventListener("pointercancel", finish);
 }
 
 $week.addEventListener("change", () => loadWeek(parseInt($week.value, 10)));
