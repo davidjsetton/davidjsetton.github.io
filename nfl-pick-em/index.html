@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>NFL Confidence Pool</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #111111;
+    --muted: #6b6b6b;
+    --line: #d9d9d9;
+    --pill: #f2f2f2;
+    --pill-hover: #e6e6e6;
+    --pick: #111111;
+    --pick-fg: #ffffff;
+    --drag: #fafafa;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111111;
+      --fg: #eeeeee;
+      --muted: #999999;
+      --line: #333333;
+      --pill: #1e1e1e;
+      --pill-hover: #2a2a2a;
+      --pick: #eeeeee;
+      --pick-fg: #111111;
+      --drag: #1a1a1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: 15px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--line);
+  }
+  header h1 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: 0.02em;
+  }
+  select, button {
+    font: inherit;
+    color: var(--fg);
+    background: var(--pill);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  button:hover, select:hover { background: var(--pill-hover); }
+  #status { color: var(--muted); font-size: 13px; margin-left: auto; }
+  main { max-width: 720px; margin: 0 auto; padding: 12px 20px 60px; }
+  #games { list-style: none; padding: 0; margin: 0; }
+  .row {
+    display: grid;
+    grid-template-columns: 44px 1fr 24px 1fr;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 4px;
+    border-bottom: 1px solid var(--line);
+    background: var(--bg);
+    cursor: grab;
+    user-select: none;
+  }
+  .row.dragging { opacity: 0.4; }
+  .row.drop-target { background: var(--drag); }
+  .rank {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: var(--muted);
+    text-align: center;
+  }
+  .at { text-align: center; color: var(--muted); font-size: 13px; }
+  .team {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    background: var(--pill);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    cursor: pointer;
+    min-width: 0;
+  }
+  .team:hover { background: var(--pill-hover); }
+  .team.picked {
+    background: var(--pick);
+    color: var(--pick-fg);
+    border-color: var(--pick);
+  }
+  .team img {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    object-fit: contain;
+  }
+  .team .name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+  .team.away { justify-content: flex-end; text-align: right; }
+  .team.away .name { order: -1; }
+  .empty { color: var(--muted); padding: 40px 0; text-align: center; }
+</style>
+</head>
+<body>
+<header>
+  <h1>NFL Confidence Pool</h1>
+  <select id="week"></select>
+  <button id="reset" title="Clear picks and order for this week">Reset week</button>
+  <span id="status"></span>
+</header>
+<main>
+  <ul id="games"><li class="empty">Loading…</li></ul>
+</main>
+
+<script>
+"use strict";
+
+const SCHEDULE = {"season":2026,"weeks":{"1":[{"id":"401872931","home":{"abbr":"KC","name":"Chiefs"},"away":{"abbr":"DEN","name":"Broncos"}},{"id":"401872656","home":{"abbr":"SEA","name":"Seahawks"},"away":{"abbr":"NE","name":"Patriots"}},{"id":"401872657","home":{"abbr":"LAR","name":"Rams"},"away":{"abbr":"SF","name":"49ers"}},{"id":"401872925","home":{"abbr":"CIN","name":"Bengals"},"away":{"abbr":"TB","name":"Buccaneers"}},{"id":"401872923","home":{"abbr":"DET","name":"Lions"},"away":{"abbr":"NO","name":"Saints"}},{"id":"401872924","home":{"abbr":"TEN","name":"Titans"},"away":{"abbr":"NYJ","name":"Jets"}},{"id":"401872659","home":{"abbr":"IND","name":"Colts"},"away":{"abbr":"BAL","name":"Ravens"}},{"id":"401872658","home":{"abbr":"PIT","name":"Steelers"},"away":{"abbr":"ATL","name":"Falcons"}},{"id":"401872661","home":{"abbr":"CAR","name":"Panthers"},"away":{"abbr":"CHI","name":"Bears"}},{"id":"401872922","home":{"abbr":"JAX","name":"Jaguars"},"away":{"abbr":"CLE","name":"Browns"}},{"id":"401872660","home":{"abbr":"HOU","name":"Texans"},"away":{"abbr":"BUF","name":"Bills"}},{"id":"401872928","home":{"abbr":"LV","name":"Raiders"},"away":{"abbr":"MIA","name":"Dolphins"}},{"id":"401872927","home":{"abbr":"MIN","name":"Vikings"},"away":{"abbr":"GB","name":"Packers"}},{"id":"401872929","home":{"abbr":"PHI","name":"Eagles"},"away":{"abbr":"WSH","name":"Commanders"}},{"id":"401872926","home":{"abbr":"LAC","name":"Chargers"},"away":{"abbr":"ARI","name":"Cardinals"}},{"id":"401872930","home":{"abbr":"NYG","name":"Giants"},"away":{"abbr":"DAL","name":"Cowboys"}}],"2":[{"id":"401872932","home":{"abbr":"BUF","name":"Bills"},"away":{"abbr":"DET","name":"Lions"}},{"id":"401872933","home":{"abbr":"ATL","name":"Falcons"},"away":{"abbr":"CAR","name":"Panthers"}},{"id":"401872937","home":{"abbr":"CHI","name":"Bears"},"away":{"abbr":"MIN","name":"Vikings"}},{"id":"401872939","home":{"abbr":"TEN","name":"Titans"},"away":{"abbr":"PHI","name":"Eagles"}},{"id":"401872946","home":{"abbr":"NE","name":"Patriots"},"away":{"abbr":"PIT","name":"Steelers"}},{"id":"401872936","home":{"abbr":"NYJ","name":"Jets"},"away":{"abbr":"GB","name":"Packers"}},{"id":"401872935","home":{"abbr":"TB","name":"Buccaneers"},"away":{"abbr":"CLE","name":"Browns"}},{"id":"401872938","home":{"abbr":"BAL","name":"Ravens"},"away":{"abbr":"NO","name":"Saints"}},{"id":"401872934","home":{"abbr":"HOU","name":"Texans"},"away":{"abbr":"CIN","name":"Bengals"}},{"id":"401872940","home":{"abbr":"DEN","name":"Broncos"},"away":{"abbr":"JAX","name":"Jaguars"}},{"id":"401872941","home":{"abbr":"LAC","name":"Chargers"},"away":{"abbr":"LV","name":"Raiders"}},{"id":"401872944","home":{"abbr":"DAL","name":"Cowboys"},"away":{"abbr":"WSH","name":"Commanders"}},{"id":"401872943","home":{"abbr":"ARI","name":"Cardinals"},"away":{"abbr":"SEA","name":"Seahawks"}},{"id":"401872942","home":{"abbr":"SF","name":"49ers"},"away":{"abbr":"MIA","name":"Dolphins"}},{"id":"401872945","home":{"abbr":"KC","name":"Chiefs"},"away":{"abbr":"IND","name":"Colts"}},{"id":"401872947","home":{"abbr":"LAR","name":"Rams"},"away":{"abbr":"NYG","name":"Giants"}}],"3":[{"id":"401872948","home":{"abbr":"GB","name":"Packers"},"away":{"abbr":"ATL","name":"Falcons"}},{"id":"401872953","home":{"abbr":"BUF","name":"Bills"},"away":{"abbr":"LAC","name":"Chargers"}},{"id":"401872949","home":{"abbr":"CLE","name":"Browns"},"away":{"abbr":"CAR","name":"Panthers"}},{"id":"401872954","home":{"abbr":"DET","name":"Lions"},"away":{"abbr":"NYJ","name":"Jets"}},{"id":"401872951","home":{"abbr":"IND","name":"Colts"},"away":{"abbr":"HOU","name":"Texans"}},{"id":"401872952","home":{"abbr":"MIA","name":"Dolphins"},"away":{"abbr":"KC","name":"Chiefs"}},{"id":"401872956","home":{"abbr":"NYG","name":"Giants"},"away":{"abbr":"TEN","name":"Titans"}},{"id":"401872950","home":{"abbr":"PIT","name":"Steelers"},"away":{"abbr":"CIN","name":"Bengals"}},{"id":"401872955","home":{"abbr":"WSH","name":"Commanders"},"away":{"abbr":"SEA","name":"Seahawks"}},{"id":"401872957","home":{"abbr":"JAX","name":"Jaguars"},"away":{"abbr":"NE","name":"Patriots"}},{"id":"401872958","home":{"abbr":"SF","name":"49ers"},"away":{"abbr":"ARI","name":"Cardinals"}},{"id":"401872959","home":{"abbr":"TB","name":"Buccaneers"},"away":{"abbr":"MIN","name":"Vikings"}},{"id":"401872960","home":{"abbr":"DAL","name":"Cowboys"},"away":{"abbr":"BAL","name":"Ravens"}},{"id":"401872961","home":{"abbr":"NO","name":"Saints"},"away":{"abbr":"LV","name":"Raiders"}},{"id":"401872962","home":{"abbr":"DEN","name":"Broncos"},"away":{"abbr":"LAR","name":"Rams"}},{"id":"401872963","home":{"abbr":"CHI","name":"Bears"},"away":{"abbr":"PHI","name":"Eagles"}}],"4":[{"id":"401872964","home":{"abbr":"CLE","name":"Browns"},"away":{"abbr":"PIT","name":"Steelers"}},{"id":"401872965","home":{"abbr":"WSH","name":"Commanders"},"away":{"abbr":"IND","name":"Colts"}},{"id":"401872971","home":{"abbr":"BUF","name":"Bills"},"away":{"abbr":"NE","name":"Patriots"}},{"id":"401872972","home":{"abbr":"CHI","name":"Bears"},"away":{"abbr":"NYJ","name":"Jets"}},{"id":"401872969","home":{"abbr":"CIN","name":"Bengals"},"away":{"abbr":"JAX","name":"Jaguars"}},{"id":"401872966","home":{"abbr":"NYG","name":"Giants"},"away":{"abbr":"ARI","name":"Cardinals"}},{"id":"401872970","home":{"abbr":"PHI","name":"Eagles"},"away":{"abbr":"LAR","name":"Rams"}},{"id":"401872968","home":{"abbr":"TB","name":"Buccaneers"},"away":{"abbr":"GB","name":"Packers"}},{"id":"401872973","home":{"abbr":"BAL","name":"Ravens"},"away":{"abbr":"TEN","name":"Titans"}},{"id":"401872967","home":{"abbr":"HOU","name":"Texans"},"away":{"abbr":"DAL","name":"Cowboys"}},{"id":"401872974","home":{"abbr":"MIN","name":"Vikings"},"away":{"abbr":"MIA","name":"Dolphins"}},{"id":"401872976","home":{"abbr":"LV","name":"Raiders"},"away":{"abbr":"KC","name":"Chiefs"}},{"id":"401872975","home":{"abbr":"SF","name":"49ers"},"away":{"abbr":"DEN","name":"Broncos"}},{"id":"401872977","home":{"abbr":"SEA","name":"Seahawks"},"away":{"abbr":"LAC","name":"Chargers"}},{"id":"401872978","home":{"abbr":"CAR","name":"Panthers"},"away":{"abbr":"DET","name":"Lions"}},{"id":"401872979","home":{"abbr":"NO","name":"Saints"},"away":{"abbr":"ATL","name":"Falcons"}}],"5":[{"id":"401872980","home":{"abbr":"DAL","name":"Cowboys"},"away":{"abbr":"TB","name":"Buccaneers"}},{"id":"401872981","home":{"abbr":"JAX","name":"Jaguars"},"away":{"abbr":"PHI","name":"Eagles"}},{"id":"401872984","home":{"abbr":"TEN","name":"Titans"},"away":{"abbr":"HOU","name":"Texans"}},{"id":"401872982","home":{"abbr":"MIA","name":"Dolphins"},"away":{"abbr":"CIN","name":"Bengals"}},{"id":"401872986","home":{"abbr":"NE","name":"Patriots"},"away":{"abbr":"LV","name":"Raiders"}},{"id":"401872987","home":{"abbr":"NO","name":"Saints"},"away":{"abbr":"MIN","name":"Vikings"}},{"id":"401872983","home":{"abbr":"NYJ","name":"Jets"},"away":{"abbr":"CLE","name":"Browns"}},{"id":"401872985","home":{"abbr":"PIT","name":"Steelers"},"away":{"abbr":"IND","name":"Colts"}},{"id":"401872988","home":{"abbr":"WSH","name":"Commanders"},"away":{"abbr":"NYG","name":"Giants"}},{"id":"401872989","home":{"abbr":"LAC","name":"Chargers"},"away":{"abbr":"DEN","name":"Broncos"}},{"id":"401872990","home":{"abbr":"GB","name":"Packers"},"away":{"abbr":"CHI","name":"Bears"}},{"id":"401872991","home":{"abbr":"ARI","name":"Cardinals"},"away":{"abbr":"DET","name":"Lions"}},{"id":"401872992","home":{"abbr":"SEA","name":"Seahawks"},"away":{"abbr":"SF","name":"49ers"}},{"id":"401872993","home":{"abbr":"ATL","name":"Falcons"},"away":{"abbr":"BAL","name":"Ravens"}},{"id":"401872994","home":{"abbr":"LAR","name":"Rams"},"away":{"abbr":"BUF","name":"Bills"}}],"6":[{"id":"401872995","home":{"abbr":"DEN","name":"Broncos"},"away":{"abbr":"SEA","name":"Seahawks"}},{"id":"401872996","home":{"abbr":"JAX","name":"Jaguars"},"away":{"abbr":"HOU","name":"Texans"}},{"id":"401872999","home":{"abbr":"ATL","name":"Falcons"},"away":{"abbr":"CHI","name":"Bears"}},{"id":"401872997","home":{"abbr":"CLE","name":"Browns"},"away":{"abbr":"BAL","name":"Ravens"}},{"id":"401873003","home":{"abbr":"IND","name":"Colts"},"away":{"abbr":"TEN","name":"Titans"}},{"id":"401873001","home":{"abbr":"NE","name":"Patriots"},"away":{"abbr":"NYJ","name":"Jets"}},{"id":"401873000","home":{"abbr":"NYG","name":"Giants"},"away":{"abbr":"NO","name":"Saints"}},{"id":"401872998","home":{"abbr":"PHI","name":"Eagles"},"away":{"abbr":"CAR","name":"Panthers"}},{"id":"401873002","home":{"abbr":"TB","name":"Buccaneers"},"away":{"abbr":"PIT","name":"Steelers"}},{"id":"401873004","home":{"abbr":"LAR","name":"Rams"},"away":{"abbr":"ARI","name":"Cardinals"}},{"id":"401873006","home":{"abbr":"KC","name":"Chiefs"},"away":{"abbr":"LAC","name":"Chargers"}},{"id":"401873005","home":{"abbr":"LV","name":"Raiders"},"away":{"abbr":"BUF","name":"Bills"}},{"id":"401873007","home":{"abbr":"GB","name":"Packers"},"away":{"abbr":"DAL","name":"Cowboys"}},{"id":"401873008","home":{"abbr":"SF","name":"49ers"},"away":{"abbr":"WSH","name":"Commanders"}}],"7":[{"id":"401873010","home":{"abbr":"CHI","name":"Bears"},"away":{"abbr":"NE","name":"Patriots"}},{"id":"401873011","home":{"abbr":"NO","name":"Saints"},"away":{"abbr":"PIT","name":"Steelers"}},{"id":"401873017","home":{"abbr":"ATL","name":"Falcons"},"away":{"abbr":"SF","name":"49ers"}},{"id":"401873013","home":{"abbr":"TEN","name":"Titans"},"away":{"abbr":"CLE","name":"Browns"}},{"id":"401873014","home":{"abbr":"MIN","name":"Vikings"},"away":{"abbr":"IND","name":"Colts"}},{"id":"401873015","home":{"abbr":"NYJ","name":"Jets"},"away":{"abbr":"MIA","name":"Dolphins"}},{"id":"401873018","home":{"abbr":"CAR","name":"Panthers"},"away":{"abbr":"TB","name":"Buccaneers"}},{"id":"401873012","home":{"abbr":"BAL","name":"Ravens"},"away":{"abbr":"CIN","name":"Bengals"}},{"id":"401873016","home":{"abbr":"HOU","name":"Texans"},"away":{"abbr":"NYG","name":"Giants"}},{"id":"401873019","home":{"abbr":"ARI","name":"Cardinals"},"away":{"abbr":"DEN","name":"Broncos"}},{"id":"401873020","home":{"abbr":"DET","name":"Lions"},"away":{"abbr":"GB","name":"Packers"}},{"id":"401873021","home":{"abbr":"LV","name":"Raiders"},"away":{"abbr":"LAR","name":"Rams"}},{"id":"401873022","home":{"abbr":"SEA","name":"Seahawks"},"away":{"abbr":"KC","name":"Chiefs"}},{"id":"401873009","home":{"abbr":"PHI","name":"Eagles"},"away":{"abbr":"DAL","name":"Cowboys"}}],"8":[{"id":"401873023","home":{"abbr":"GB","name":"Packers"},"away":{"abbr":"CAR","name":"Panthers"}},{"id":"401873026","home":{"abbr":"BUF","name":"Bills"},"away":{"abbr":"BAL","name":"Ravens"}},{"id":"401873031","home":{"abbr":"CIN","name":"Bengals"},"away":{"abbr":"TEN","name":"Titans"}},{"id":"401873024","home":{"abbr":"DAL","name":"Cowboys"},"away":{"abbr":"ARI","name":"Cardinals"}},{"id":"401873030","home":{"abbr":"DET","name":"Lions"},"away":{"abbr":"MIN","name":"Vikings"}},{"id":"401873029","home":{"abbr":"NYJ","name":"Jets"},"away":{"abbr":"LV","name":"Raiders"}},{"id":"401873027","home":{"abbr":"PIT","name":"Steelers"},"away":{"abbr":"CLE","name":"Browns"}},{"id":"401873025","home":{"abbr":"TB","name":"Buccaneers"},"away":{"abbr":"ATL","name":"Falcons"}},{"id":"401873028","home":{"abbr":"JAX","name":"Jaguars"},"away":{"abbr":"IND","name":"Colts"}},{"id":"401873032","home":{"abbr":"LAR","name":"Rams"},"away":{"abbr":"LAC","name":"Chargers"}},{"id":"401873033","home":{"abbr":"DEN","name":"Broncos"},"away":{"abbr":"KC","name":"Chiefs"}},{"id":"401873034","home":{"abbr":"MIA","name":"Dolphins"},"away":{"abbr":"NE","name":"Patriots"}},{"id":"401873035","home":{"abbr":"WSH","name":"Commanders"},"away":{"abbr":"PHI","name":"Eagles"}},{"id":"401873036","home":{"abbr":"SEA","name":"Seahawks"},"away":{"abbr":"CHI","name":"Bears"}}],"9":[{"id":"401873037","home":{"abbr":"BAL","name":"Ravens"},"away":{"abbr":"JAX","name":"Jaguars"}},{"id":"401873038","home":{"abbr":"ATL","name":"Falcons"},"away":{"abbr":"CIN","name":"Bengals"}},{"id":"401873040","home":{"abbr":"IND","name":"Colts"},"away":{"abbr":"DAL","name":"Cowboys"}},{"id":"401873045","home":{"abbr":"KC","name":"Chiefs"},"away":{"abbr":"NYJ","name":"Jets"}},{"id":"401873042","home":{"abbr":"MIA","name":"Dolphins"},"away":{"abbr":"DET","name":"Lions"}},{"id":"401873039","home":{"abbr":"NO","name":"Saints"},"away":{"abbr":"CLE","name":"Browns"}},{"id":"401873044","home":{"abbr":"PHI","name":"Eagles"},"away":{"abbr":"NYG","name":"Giants"}},{"id":"401873043","home":{"abbr":"WSH","name":"Commanders"},"away":{"abbr":"LAR","name":"Rams"}},{"id":"401873041","home":{"abbr":"CAR","name":"Panthers"},"away":{"abbr":"DEN","name":"Broncos"}},{"id":"401873046","home":{"abbr":"LAC","name":"Chargers"},"away":{"abbr":"HOU","name":"Texans"}},{"id":"401873047","home":{"abbr":"SF","name":"49ers"},"away":{"abbr":"LV","name":"Raiders"}},{"id":"401873049","home":{"abbr":"NE","name":"Patriots"},"away":{"abbr":"GB","name":"Packers"}},{"id":"401873048","home":{"abbr":"SEA","name":"Seahawks"},"away":{"abbr":"ARI","name":"Cardinals"}},{"id":"401873050","home":{"abbr":"CHI","name":"Bears"},"away":{"abbr":"TB","name":"Buccaneers"}},{"id":"401873051","home":{"abbr":"MIN","name":"Vikings"},"away":{"abbr":"BUF","name":"Bills"}}],"10":[{"id":"401873052","home":{"abbr":"NYG","name":"Giants"},"away":{"abbr":"WSH","name":"Commanders"}},{"id":"401873053","home":{"abbr":"DET","name":"Lions"},"away":{"abbr":"NE","name":"Patriots"}},{"id":"401873058","home":{"abbr":"ATL","name":"Falcons"},"away":{"abbr":"KC","name":"Chiefs"}},{"id":"401873056","home":{"abbr":"CLE","name":"Browns"},"away":{"abbr":"HOU","name":"Texans"}},{"id":"401873060","home":{"abbr":"GB","name":"Packers"},"away":{"abbr":"MIN","name":"Vikings"}},{"id":"401873057","home":{"abbr":"TEN","name":"Titans"},"away":{"abbr":"JAX","name":"Jaguars"}},{"id":"401873059","home":{"abbr":"IND","name":"Colts"},"away":{"abbr":"MIA","name":"Dolphins"}},{"id":"401873055","home":{"abbr":"NO","name":"Saints"},"away":{"abbr":"CAR","name":"Panthers"}},{"id":"401873054","home":{"abbr":"NYJ","name":"Jets"},"away":{"abbr":"BUF","name":"Bills"}},{"id":"401873062","home":{"abbr":"LV","name":"Raiders"},"away":{"abbr":"SEA","name":"Seahawks"}},{"id":"401873061","home":{"abbr":"ARI","name":"Cardinals"},"away":{"abbr":"LAR","name":"Rams"}},{"id":"401873063","home":{"abbr":"DAL","name":"Cowboys"},"away":{"abbr":"SF","name":"49ers"}},{"id":"401873064","home":{"abbr":"CIN","name":"Bengals"},"away":{"abbr":"PIT","name":"Steelers"}},{"id":"401873065","home":{"abbr":"BAL","name":"Ravens"},"away":{"abbr":"LAC","name":"Chargers"}}],"11":[{"id":"401873066","home":{"abbr":"HOU","name":"Texans"},"away":{"abbr":"IND","name":"Colts"}},{"id":"401873070","home":{"abbr":"BUF","name":"Bills"},"away":{"abbr":"MIA","name":"Dolphins"}},{"id":"401873071","home":{"abbr":"CHI","name":"Bears"},"away":{"abbr":"NO","name":"Saints"}},{"id":"401873073","home":{"abbr":"DAL","name":"Cowboys"},"away":{"abbr":"TEN","name":"Titans"}},{"id":"401873072","home":{"abbr":"DET","name":"Lions"},"away":{"abbr":"TB","name":"Buccaneers"}},{"id":"401873067","home":{"abbr":"KC","name":"Chiefs"},"away":{"abbr":"ARI","name":"Cardinals"}},{"id":"401873069","home":{"abbr":"NYG","name":"Giants"},"away":{"abbr":"JAX","name":"Jaguars"}},{"id":"401873068","home":{"abbr":"CAR","name":"Panthers"},"away":{"abbr":"BAL","name":"Ravens"}},{"id":"401873074","home":{"abbr":"LAC","name":"Chargers"},"away":{"abbr":"NYJ","name":"Jets"}},{"id":"401873075","home":{"abbr":"DEN","name":"Broncos"},"away":{"abbr":"LV","name":"Raiders"}},{"id":"401873076","home":{"abbr":"PHI","name":"Eagles"},"away":{"abbr":"PIT","name":"Steelers"}},{"id":"401873077","home":{"abbr":"SF","name":"49ers"},"away":{"abbr":"MIN","name":"Vikings"}},{"id":"401873078","home":{"abbr":"WSH","name":"Commanders"},"away":{"abbr":"CIN","name":"Bengals"}}],"12":[{"id":"401873079","home":{"abbr":"LAR","name":"Rams"},"away":{"abbr":"GB","name":"Packers"}},{"id":"401873081","home":{"abbr":"DET","name":"Lions"},"away":{"abbr":"CHI","name":"Bears"}},{"id":"401873080","home":{"abbr":"DAL","name":"Cowboys"},"away":{"abbr":"PHI","name":"Eagles"}},{"id":"401873082","home":{"abbr":"BUF","name":"Bills"},"away":{"abbr":"KC","name":"Chiefs"}},{"id":"401873083","home":{"abbr":"PIT","name":"Steelers"},"away":{"abbr":"DEN","name":"Broncos"}},{"id":"401873087","home":{"abbr":"CIN","name":"Bengals"},"away":{"abbr":"NO","name":"Saints"}},{"id":"401873086","home":{"abbr":"CLE","name":"Browns"},"away":{"abbr":"LV","name":"Raiders"}},{"id":"401873088","home":{"abbr":"IND","name":"Colts"},"away":{"abbr":"NYG","name":"Giants"}},{"id":"401873089","home":{"abbr":"MIA","name":"Dolphins"},"away":{"abbr":"NYJ","name":"Jets"}},{"id":"401873084","home":{"abbr":"MIN","name":"Vikings"},"away":{"abbr":"ATL","name":"Falcons"}},{"id":"401873085","home":{"abbr":"HOU","name":"Texans"},"away":{"abbr":"BAL","name":"Ravens"}},{"id":"401873090","home":{"abbr":"JAX","name":"Jaguars"},"away":{"abbr":"TEN","name":"Titans"}},{"id":"401873092","home":{"abbr":"ARI","name":"Cardinals"},"away":{"abbr":"WSH","name":"Commanders"}},{"id":"401873091","home":{"abbr":"SF","name":"49ers"},"away":{"abbr":"SEA","name":"Seahawks"}},{"id":"401873093","home":{"abbr":"LAC","name":"Chargers"},"away":{"abbr":"NE","name":"Patriots"}},{"id":"401873094","home":{"abbr":"TB","name":"Buccaneers"},"away":{"abbr":"CAR","name":"Panthers"}}],"13":[{"id":"401873096","home":{"abbr":"LAR","name":"Rams"},"away":{"abbr":"KC","name":"Chiefs"}},{"id":"401873098","home":{"abbr":"ATL","name":"Falcons"},"away":{"abbr":"DET","name":"Lions"}},{"id":"401873100","home":{"abbr":"CHI","name":"Bears"},"away":{"abbr":"JAX","name":"Jaguars"}},{"id":"401873097","home":{"abbr":"CLE","name":"Browns"},"away":{"abbr":"CIN","name":"Bengals"}},{"id":"401873102","home":{"abbr":"TEN","name":"Titans"},"away":{"abbr":"WSH","name":"Commanders"}},{"id":"401873099","home":{"abbr":"NO","name":"Saints"},"away":{"abbr":"GB","name":"Packers"}},{"id":"401873095","home":{"abbr":"NYG","name":"Giants"},"away":{"abbr":"SF","name":"49ers"}},{"id":"401873101","home":{"abbr":"TB","name":"Buccaneers"},"away":{"abbr":"LAC","name":"Chargers"}},{"id":"401873103","home":{"abbr":"DEN","name":"Broncos"},"away":{"abbr":"MIA","name":"Dolphins"}},{"id":"401873104","home":{"abbr":"ARI","name":"Cardinals"},"away":{"abbr":"PHI","name":"Eagles"}},{"id":"401873106","home":{"abbr":"MIN","name":"Vikings"},"away":{"abbr":"CAR","name":"Panthers"}},{"id":"401873105","home":{"abbr":"NE","name":"Patriots"},"away":{"abbr":"BUF","name":"Bills"}},{"id":"401873107","home":{"abbr":"PIT","name":"Steelers"},"away":{"abbr":"HOU","name":"Texans"}},{"id":"401873108","home":{"abbr":"SEA","name":"Seahawks"},"away":{"abbr":"DAL","name":"Cowboys"}}],"14":[{"id":"401873109","home":{"abbr":"NE","name":"Patriots"},"away":{"abbr":"MIN","name":"Vikings"}},{"id":"401873110","home":{"abbr":"CLE","name":"Browns"},"away":{"abbr":"ATL","name":"Falcons"}},{"id":"401873117","home":{"abbr":"DET","name":"Lions"},"away":{"abbr":"TEN","name":"Titans"}},{"id":"401873111","home":{"abbr":"MIA","name":"Dolphins"},"away":{"abbr":"CHI","name":"Bears"}},{"id":"401873112","home":{"abbr":"NYJ","name":"Jets"},"away":{"abbr":"DEN","name":"Broncos"}},{"id":"401873114","home":{"abbr":"PHI","name":"Eagles"},"away":{"abbr":"IND","name":"Colts"}},{"id":"401873113","home":{"abbr":"WSH","name":"Commanders"},"away":{"abbr":"HOU","name":"Texans"}},{"id":"401873115","home":{"abbr":"CAR","name":"Panthers"},"away":{"abbr":"NO","name":"Saints"}},{"id":"401873116","home":{"abbr":"BAL","name":"Ravens"},"away":{"abbr":"TB","name":"Buccaneers"}},{"id":"401873118","home":{"abbr":"LV","name":"Raiders"},"away":{"abbr":"LAC","name":"Chargers"}},{"id":"401873119","home":{"abbr":"CIN","name":"Bengals"},"away":{"abbr":"KC","name":"Chiefs"}},{"id":"401873120","home":{"abbr":"SF","name":"49ers"},"away":{"abbr":"LAR","name":"Rams"}},{"id":"401873121","home":{"abbr":"SEA","name":"Seahawks"},"away":{"abbr":"NYG","name":"Giants"}},{"id":"401873122","home":{"abbr":"GB","name":"Packers"},"away":{"abbr":"BUF","name":"Bills"}},{"id":"401873123","home":{"abbr":"JAX","name":"Jaguars"},"away":{"abbr":"PIT","name":"Steelers"}}],"15":[{"id":"401873124","home":{"abbr":"LAC","name":"Chargers"},"away":{"abbr":"SF","name":"49ers"}},{"id":"401873125","home":{"abbr":"PHI","name":"Eagles"},"away":{"abbr":"SEA","name":"Seahawks"}},{"id":"401873126","home":{"abbr":"BUF","name":"Bills"},"away":{"abbr":"CHI","name":"Bears"}},{"id":"401873133","home":{"abbr":"GB","name":"Packers"},"away":{"abbr":"MIA","name":"Dolphins"}},{"id":"401873131","home":{"abbr":"TEN","name":"Titans"},"away":{"abbr":"IND","name":"Colts"}},{"id":"401873130","home":{"abbr":"NYG","name":"Giants"},"away":{"abbr":"CLE","name":"Browns"}},{"id":"401873128","home":{"abbr":"PIT","name":"Steelers"},"away":{"abbr":"BAL","name":"Ravens"}},{"id":"401873134","home":{"abbr":"TB","name":"Buccaneers"},"away":{"abbr":"NO","name":"Saints"}},{"id":"401873127","home":{"abbr":"WSH","name":"Commanders"},"away":{"abbr":"ATL","name":"Falcons"}},{"id":"401873129","home":{"abbr":"CAR","name":"Panthers"},"away":{"abbr":"CIN","name":"Bengals"}},{"id":"401873132","home":{"abbr":"HOU","name":"Texans"},"away":{"abbr":"JAX","name":"Jaguars"}},{"id":"401873135","home":{"abbr":"ARI","name":"Cardinals"},"away":{"abbr":"NYJ","name":"Jets"}},{"id":"401873137","home":{"abbr":"LV","name":"Raiders"},"away":{"abbr":"DEN","name":"Broncos"}},{"id":"401873136","home":{"abbr":"LAR","name":"Rams"},"away":{"abbr":"DAL","name":"Cowboys"}},{"id":"401873138","home":{"abbr":"MIN","name":"Vikings"},"away":{"abbr":"DET","name":"Lions"}},{"id":"401873139","home":{"abbr":"KC","name":"Chiefs"},"away":{"abbr":"NE","name":"Patriots"}}],"16":[{"id":"401873140","home":{"abbr":"PHI","name":"Eagles"},"away":{"abbr":"HOU","name":"Texans"}},{"id":"401873141","home":{"abbr":"CHI","name":"Bears"},"away":{"abbr":"GB","name":"Packers"}},{"id":"401873142","home":{"abbr":"DEN","name":"Broncos"},"away":{"abbr":"BUF","name":"Bills"}},{"id":"401873143","home":{"abbr":"SEA","name":"Seahawks"},"away":{"abbr":"LAR","name":"Rams"}},{"id":"401873146","home":{"abbr":"ATL","name":"Falcons"},"away":{"abbr":"TB","name":"Buccaneers"}},{"id":"401873145","home":{"abbr":"IND","name":"Colts"},"away":{"abbr":"CIN","name":"Bengals"}},{"id":"401873147","home":{"abbr":"MIN","name":"Vikings"},"away":{"abbr":"WSH","name":"Commanders"}},{"id":"401873144","home":{"abbr":"PIT","name":"Steelers"},"away":{"abbr":"CAR","name":"Panthers"}},{"id":"401873150","home":{"abbr":"MIA","name":"Dolphins"},"away":{"abbr":"LAC","name":"Chargers"}},{"id":"401873148","home":{"abbr":"NO","name":"Saints"},"away":{"abbr":"ARI","name":"Cardinals"}},{"id":"401873151","home":{"abbr":"NYJ","name":"Jets"},"away":{"abbr":"NE","name":"Patriots"}},{"id":"401873149","home":{"abbr":"BAL","name":"Ravens"},"away":{"abbr":"CLE","name":"Browns"}},{"id":"401873152","home":{"abbr":"LV","name":"Raiders"},"away":{"abbr":"TEN","name":"Titans"}},{"id":"401873153","home":{"abbr":"KC","name":"Chiefs"},"away":{"abbr":"SF","name":"49ers"}},{"id":"401873154","home":{"abbr":"DAL","name":"Cowboys"},"away":{"abbr":"JAX","name":"Jaguars"}},{"id":"401873155","home":{"abbr":"DET","name":"Lions"},"away":{"abbr":"NYG","name":"Giants"}}],"17":[{"id":"401873156","home":{"abbr":"CIN","name":"Bengals"},"away":{"abbr":"BAL","name":"Ravens"}},{"id":"401873157","home":{"abbr":"NE","name":"Patriots"},"away":{"abbr":"DEN","name":"Broncos"}},{"id":"401873158","home":{"abbr":"LAC","name":"Chargers"},"away":{"abbr":"KC","name":"Chiefs"}},{"id":"401873159","home":{"abbr":"TB","name":"Buccaneers"},"away":{"abbr":"LAR","name":"Rams"}},{"id":"401873160","home":{"abbr":"JAX","name":"Jaguars"},"away":{"abbr":"WSH","name":"Commanders"}},{"id":"401873164","home":{"abbr":"ATL","name":"Falcons"},"away":{"abbr":"NO","name":"Saints"}},{"id":"401873162","home":{"abbr":"CLE","name":"Browns"},"away":{"abbr":"IND","name":"Colts"}},{"id":"401873165","home":{"abbr":"DAL","name":"Cowboys"},"away":{"abbr":"NYG","name":"Giants"}},{"id":"401873166","home":{"abbr":"TEN","name":"Titans"},"away":{"abbr":"PIT","name":"Steelers"}},{"id":"401873161","home":{"abbr":"MIA","name":"Dolphins"},"away":{"abbr":"BUF","name":"Bills"}},{"id":"401873163","home":{"abbr":"NYJ","name":"Jets"},"away":{"abbr":"MIN","name":"Vikings"}},{"id":"401873167","home":{"abbr":"CAR","name":"Panthers"},"away":{"abbr":"SEA","name":"Seahawks"}},{"id":"401873168","home":{"abbr":"ARI","name":"Cardinals"},"away":{"abbr":"LV","name":"Raiders"}},{"id":"401873169","home":{"abbr":"CHI","name":"Bears"},"away":{"abbr":"DET","name":"Lions"}},{"id":"401873170","home":{"abbr":"SF","name":"49ers"},"away":{"abbr":"PHI","name":"Eagles"}},{"id":"401873171","home":{"abbr":"GB","name":"Packers"},"away":{"abbr":"HOU","name":"Texans"}}],"18":[{"id":"401873181","home":{"abbr":"BUF","name":"Bills"},"away":{"abbr":"NYJ","name":"Jets"}},{"id":"401873174","home":{"abbr":"CIN","name":"Bengals"},"away":{"abbr":"CLE","name":"Browns"}},{"id":"401873179","home":{"abbr":"DEN","name":"Broncos"},"away":{"abbr":"LAC","name":"Chargers"}},{"id":"401873176","home":{"abbr":"GB","name":"Packers"},"away":{"abbr":"DET","name":"Lions"}},{"id":"401873177","home":{"abbr":"IND","name":"Colts"},"away":{"abbr":"JAX","name":"Jaguars"}},{"id":"401873178","home":{"abbr":"KC","name":"Chiefs"},"away":{"abbr":"LV","name":"Raiders"}},{"id":"401873185","home":{"abbr":"LAR","name":"Rams"},"away":{"abbr":"SEA","name":"Seahawks"}},{"id":"401873173","home":{"abbr":"MIN","name":"Vikings"},"away":{"abbr":"CHI","name":"Bears"}},{"id":"401873180","home":{"abbr":"NE","name":"Patriots"},"away":{"abbr":"MIA","name":"Dolphins"}},{"id":"401873186","home":{"abbr":"NO","name":"Saints"},"away":{"abbr":"TB","name":"Buccaneers"}},{"id":"401873182","home":{"abbr":"NYG","name":"Giants"},"away":{"abbr":"PHI","name":"Eagles"}},{"id":"401873184","home":{"abbr":"ARI","name":"Cardinals"},"away":{"abbr":"SF","name":"49ers"}},{"id":"401873175","home":{"abbr":"WSH","name":"Commanders"},"away":{"abbr":"DAL","name":"Cowboys"}},{"id":"401873172","home":{"abbr":"CAR","name":"Panthers"},"away":{"abbr":"ATL","name":"Falcons"}},{"id":"401873183","home":{"abbr":"BAL","name":"Ravens"},"away":{"abbr":"PIT","name":"Steelers"}},{"id":"401873187","home":{"abbr":"HOU","name":"Texans"},"away":{"abbr":"TEN","name":"Titans"}}]}};
+
+const SEASON = SCHEDULE.season;
+const WEEKS = 18; // regular season only
+const STORAGE_KEY = (w) => `nflpool:${SEASON}:w${w}`;
+
+const $week = document.getElementById("week");
+const $games = document.getElementById("games");
+const $status = document.getElementById("status");
+const $reset = document.getElementById("reset");
+
+for (let w = 1; w <= WEEKS; w++) {
+  const opt = document.createElement("option");
+  opt.value = w;
+  opt.textContent = `Week ${w}`;
+  $week.appendChild(opt);
+}
+
+// Guess the current week from date: Sept 1 ≈ start of week 1.
+function guessWeek() {
+  const start = new Date(SEASON, 8, 4); // Sept 4-ish; NFL kickoff Thursday
+  const days = Math.floor((Date.now() - start.getTime()) / 86400000);
+  const w = Math.floor(days / 7) + 1;
+  return Math.min(Math.max(w, 1), WEEKS);
+}
+$week.value = guessWeek();
+
+let currentGames = []; // [{id, away:{abbr,name,logo}, home:{...}}]
+let state = { order: [], picks: {} }; // order = array of game ids; picks[id] = 'home'|'away'
+
+function loadState(week) {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY(week));
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return { order: [], picks: {} };
+}
+function saveState(week) {
+  localStorage.setItem(STORAGE_KEY(week), JSON.stringify(state));
+}
+
+function loadWeek(week) {
+  currentGames = (SCHEDULE.weeks[String(week)] || []).map(g => ({
+    id: g.id,
+    home: { ...g.home, logo: `https://a.espncdn.com/i/teamlogos/nfl/500/${g.home.abbr.toLowerCase()}.png` },
+    away: { ...g.away, logo: `https://a.espncdn.com/i/teamlogos/nfl/500/${g.away.abbr.toLowerCase()}.png` },
+  }));
+
+  state = loadState(week);
+  // Reconcile order with actual games: keep known ids in their saved order,
+  // append any new games at the bottom, drop stale ids.
+  const known = new Set(currentGames.map(g => g.id));
+  const savedOrdered = state.order.filter(id => known.has(id));
+  const missing = currentGames.map(g => g.id).filter(id => !savedOrdered.includes(id));
+  state.order = [...savedOrdered, ...missing];
+  saveState(week);
+
+  render(week);
+  $status.textContent = `${currentGames.length} games`;
+}
+
+function render(week) {
+  $games.innerHTML = "";
+  if (currentGames.length === 0) {
+    $games.innerHTML = '<li class="empty">No games this week.</li>';
+    return;
+  }
+  // Ranks always count down from 16 so bye weeks use e.g. 16..4 instead of 13..1.
+  state.order.forEach((id, i) => {
+    const g = currentGames.find(x => x.id === id);
+    if (!g) return;
+    const rank = 16 - i;
+    const li = document.createElement("li");
+    li.className = "row";
+    li.draggable = true;
+    li.dataset.id = id;
+
+    const rankEl = document.createElement("div");
+    rankEl.className = "rank";
+    rankEl.textContent = rank;
+
+    const awayEl = teamPill(g.away, "away", state.picks[id] === "away");
+    awayEl.addEventListener("click", (e) => { e.stopPropagation(); pick(id, "away", week); });
+
+    const atEl = document.createElement("div");
+    atEl.className = "at";
+    atEl.textContent = "@";
+
+    const homeEl = teamPill(g.home, "home", state.picks[id] === "home");
+    homeEl.addEventListener("click", (e) => { e.stopPropagation(); pick(id, "home", week); });
+
+    li.append(rankEl, awayEl, atEl, homeEl);
+    attachDrag(li, week);
+    $games.appendChild(li);
+  });
+}
+
+function teamPill(team, side, picked) {
+  const el = document.createElement("div");
+  el.className = `team ${side}${picked ? " picked" : ""}`;
+  const img = document.createElement("img");
+  img.src = team.logo;
+  img.alt = "";
+  img.onerror = () => { img.style.display = "none"; };
+  const nm = document.createElement("span");
+  nm.className = "name";
+  nm.textContent = team.name;
+  el.append(img, nm);
+  return el;
+}
+
+function pick(gameId, side, week) {
+  if (state.picks[gameId] === side) delete state.picks[gameId];
+  else state.picks[gameId] = side;
+  saveState(week);
+  render(week);
+}
+
+// --- HTML5 native drag & drop ---
+let dragId = null;
+function attachDrag(li, week) {
+  li.addEventListener("dragstart", (e) => {
+    dragId = li.dataset.id;
+    li.classList.add("dragging");
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", dragId);
+  });
+  li.addEventListener("dragend", () => {
+    dragId = null;
+    document.querySelectorAll(".row").forEach(r => r.classList.remove("dragging", "drop-target"));
+  });
+  li.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    document.querySelectorAll(".row").forEach(r => r.classList.remove("drop-target"));
+    li.classList.add("drop-target");
+  });
+  li.addEventListener("dragleave", () => li.classList.remove("drop-target"));
+  li.addEventListener("drop", (e) => {
+    e.preventDefault();
+    const src = dragId;
+    const dst = li.dataset.id;
+    if (!src || src === dst) return;
+    const from = state.order.indexOf(src);
+    const to = state.order.indexOf(dst);
+    state.order.splice(from, 1);
+    state.order.splice(to, 0, src);
+    saveState(week);
+    render(week);
+  });
+}
+
+$week.addEventListener("change", () => loadWeek(parseInt($week.value, 10)));
+$reset.addEventListener("click", () => {
+  if (!confirm("Clear picks and order for this week?")) return;
+  const w = parseInt($week.value, 10);
+  localStorage.removeItem(STORAGE_KEY(w));
+  loadWeek(w);
+});
+
+loadWeek(parseInt($week.value, 10));
+</script>
+</body>
+</html>
